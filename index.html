@@ -5,15 +5,15 @@
     </head>
 
     <body>
-        <div id="screen" style="display: flex; justify-content: center;"></div>
+        <div id="screen" style="width: 100%; text-align: center;"></div>
 
-        <script src="js/melonJS.js"></script>
-        <script src="js/main.js"></script>
+        <script type="text/javascript" src="./js/melonJS.js"></script>
+        <script type="text/javascript" src="./build/game.js"></script>
         <script>
-            me.device.onReady(()=>{
+            window.onReady(function onRead() {
                 console.log("starting");
-                game.onload()
-            })
+                game.onload();
+            });
         </script>
     </body>
 </html>

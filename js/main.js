@@ -1,23 +1,26 @@
 var game = {
-    /**
-     * an object where to store game global data
-     */
     data: {
         score: 0
     },
 
-    // Run on page load.
+    resources : [
+        {name: "title_background", type: "image", src: "data/background.png"}
+    ],
+
+    //init melonJS
     onload: function () {
-        // Initialize the video.
+        //init canvas
         if (!me.video.init(500, 500, { parent: "screen", scale: "auto", scaleMethod: "fit" })) {
             alert("Your browser does not support HTML5 canvas.");
             return;
         }
-
-        me.state.change(me.state.LOADING);
+        me.loader.preload(game.resources, this.loaded.bind(this));
     },
 
+    //after melonJS loads
     loaded: function () {
-
+        console.log("loading");
+        me.state.set(me.state.MENU, new TitleScreen()); 
+        me.state.change(me.state.MENU);
     }
 };
