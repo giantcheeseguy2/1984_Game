@@ -53,8 +53,8 @@ game.OpeningScreen = me.ScreenObject.extend({
 
             init: function () {
                 this._super(me.Renderable, "init", [0, 0, me.game.viewport.width, me.game.viewport.height]);
-                this.isDirty = true;
                 this.text = "";
+                this.next = "Press ENTER to continue";
                 this.text = this.text + "THE YEAR IS 1984\n\n\n";
                 this.text = this.text + "YOU LIVE IN AIRSTRIP ONE, A PROVINCE OF OCEANIA\n\n\n";
                 this.text = this.text + "CURRENTLY, OCEANIA IS UNDER THE CONTROL OF THE PARTY AND ITS\nMYSTERIOUS LEADER BIG BROTHER\n\n\n";
@@ -64,9 +64,11 @@ game.OpeningScreen = me.ScreenObject.extend({
                 this.text = this.text + "YOU WILL BE COMPENSATED BASED ON THE QUALITY OF YOUR CENSORING\n\n\n";
                 this.text = this.text + "YOU MAY REWRITE THE DOCUMENTS HOWEVER YOU WANT, BUT BEWARE\n\n\n";
                 this.text = this.text + "BIG BROTHER IS ALWAYS WATCHING";
+                this.text = this.text + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPress ENTER to continue...";
                 this.font = new me.Font("Ariel", 13, "#FFFFFF");
                 this.ypos = 600;
-                this.scroller = new me.Tween(this).to({ ypos: 20}, 20000).onComplete(this.finish.bind(this)).start();
+                this.finished = false;
+                this.scroller = new me.Tween(this).to({ ypos: 20}, 10000).onComplete(this.finish.bind(this)).start();
             },
 
             draw: function (renderer) {
@@ -76,17 +78,24 @@ game.OpeningScreen = me.ScreenObject.extend({
             },
 
             finish: function () {
-                
+                console.log("hi");
+                this.finished = true;
             },
-
-            onDestroyEvent : function () {
-                this.scroller.stop();
-            }
         }));
+
         me.game.world.addChild(this.exposition);
+
+        me.input.bindKey(me.input.KEY.ENTER, "enter", true);
+        this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
+            if(action == "enter"){
+                console.log("hi");
+            }
+        });
     },
 
     onDestroyEvent: function () {
+        me.game.world.removeChild(this.transition);
+        me.game.world.removeChild(this.exposition);
         this.transition = null;
         this.exposition = null;
     }
