@@ -1,6 +1,8 @@
 var game = {
     data: {
-        score: 0
+        score: 0,
+        money: 0,
+
     },
 
     resources: [
@@ -46,6 +48,20 @@ game.WalkingPeople = me.Entity.extend({
     }
 });
 
+game.button = me.GUI_Object.extend({
+   constructor(a, b, c){
+      this._super(x, y, {image: c, framewidth: 150, frameheight: 50});
+   },
+
+   // output something in the console
+   // when the object is clicked
+   onClick:function (event) {
+      console.log("clicked!");
+      // don't propagate the event
+      return false;
+   }
+});
+
 game.TitleScreen = me.ScreenObject.extend({
 
     init: function () {
@@ -74,11 +90,13 @@ game.TitleScreen = me.ScreenObject.extend({
             { image: "title_text" }
         )
         me.game.world.addChild(this.text);
-        me.pool.pull("me.Tween", this.text.pos).to({ y: me.video.renderer.getHeight()/2 - 150}, 1e3).easing(me.Tween.Easing.Exponential.InOut).start();
+        me.pool.pull("me.Tween", this.text.pos).to({ y: me.video.renderer.getHeight()/2 - 175}, 1e3).easing(me.Tween.Easing.Exponential.InOut).start();
     },
 
     onDestroyEvent: function () {
-        this.people = null;
-        this.person = null;
+        this.people1 = null;
+        this.people2 = null;
+        this.front = null;
+        this.text = null;
     }
 });
