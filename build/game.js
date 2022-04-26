@@ -2,7 +2,11 @@ var game = {
     data: {
         score: 0,
         money: 0,
-
+        diary: 0,
+        book: 0,
+        shop: 0,
+        INTRO: me.state.USER + 0,
+        ROOM: me.state.USER + 1
     },
 
     resources: [
@@ -11,7 +15,10 @@ var game = {
         { name: "single_person", type: "image", src: "data/title/center_title.png" },
         { name: "title_text", type: "image", src: "data/title/title_text.png" },
         { name: "start_button", type: "image", src: "data/title/start_button.png" },
-        { name: "transition", type: "image", src: "data/intro/transition.png" }
+        { name: "work_button", type: "image", src: "data/room/work_button.png" },
+        { name: "empty_shop_button", type: "image", src: "data/room/empty_shop_button.png" },
+        { name: "transition", type: "image", src: "data/intro/transition.png" },
+        { name: "room", type: "image", src: "data/room/bedroom.png"}
     ],
 
     onload: function () {
@@ -25,12 +32,105 @@ var game = {
     loaded: function () {
         console.log("loaded");
         me.state.set(me.state.MENU, new game.TitleScreen());
-        me.state.set(me.state.INTRO, new game.OpeningScreen());
+        me.state.set(game.data.INTRO, new game.OpeningScreen());
+        me.state.set(game.data.ROOM, new game.RoomScreen());
         me.pool.register("animated_people", game.WalkingPeople);
         me.pool.register("start_button", game.StartButton);
+        me.pool.register("work_button", game.WorkButton);
         me.state.change(me.state.MENU);
     }
 };
+
+game.WorkButton = me.GUI_Object.extend({
+    init: function (a, b) {
+        this._super(me.GUI_Object, "init", [a, b, {
+            image: me.loader.getImage("work_button"),
+            width: 150,
+            height: 50
+        }]);
+        this.anchorPoint.x = 0;
+        this.anchorPoint.y = 0;
+    },
+
+    onClick: function (event) {
+        return true;
+    },
+
+    onOver: function (event) {
+        this.setOpacity(0.9);
+        return true;
+    },
+
+    onOut: function (event) {
+        this.setOpacity(1.0);
+        return true;
+    }
+});
+
+game.RoomScreen = me.ScreenObject.extend({
+    
+    init: function () {
+        this.moneyDisplay = null;
+        this.background = null;
+        this.work = null;
+        this.shop = null;
+    },
+
+    onResetEvent: function () {
+        console.log("transitioned");
+        this.background = new me.ImageLayer(0, 0, { image: "room" });
+        me.game.world.addChild(this.background);
+
+        this.moneyDisplay = new (me.Renderable.extend({
+
+            init: function () { 
+                this._super(me.Renderable, "init", [0, 0, me.game.viewport.width, me.game.viewport.height]);
+                this.font = new me.Font("Ariel", 20, "#FFFFFF");
+                this.isDirty = true;
+                console.log("made");
+            },
+
+            draw: function (renderer) {
+                var text = "$" + String(game.data.money);
+                var measure = this.font.measureText(renderer, text);
+                this.font.draw(renderer, text, me.game.viewport.width - measure.width - 10, 20);
+            },
+            
+            update: function(x) {
+                return true;
+            }
+        }));
+
+        this.work = me.pool.pull("work_button", me.game.viewport.width - 20 - 150, me.game.viewport.height/2 + 135);
+        me.game.world.addChild(this.work);
+
+        me.game.world.addChild(this.moneyDisplay);
+
+        if(game.data.shop == 0){
+            this.shop = new me.Sprite(
+                me.video.renderer.getWidth() - 95,
+                me.video.renderer.getHeight()/2 + 230,
+                { image: "empty_shop_button" }
+            );
+            me.game.world.addChild(this.shop);
+        }
+
+        me.input.bindKey(me.input.KEY.ENTER, "enter", true);
+        this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
+            if(action == "enter"){
+                console.log("hi");
+                game.data.money++;
+            }
+        });
+    },
+
+    onDestroyEvent: function() {
+        this.moneyDisplay = null; 
+        this.background = null;
+        this.work = null;
+    }
+
+});
 
 game.OpeningScreen = me.ScreenObject.extend({
 
@@ -62,25 +162,19 @@ game.OpeningScreen = me.ScreenObject.extend({
                 this.text = this.text + "CURRENTLY, YOU ARE AN OUTER PARTY MEMBER WORKING AT THE MINISTRY OF TRUTH\n\n\n";
                 this.text = this.text + "YOUR JOB IS TO REWRITE HISTORY TO BENEFIT THE STATE\n\n\n";
                 this.text = this.text + "YOU WILL BE COMPENSATED BASED ON THE QUALITY OF YOUR CENSORING\n\n\n";
-                this.text = this.text + "YOU MAY REWRITE THE DOCUMENTS HOWEVER YOU WANT, BUT BEWARE\n\n\n";
+                this.text = this.text + "BEFORE YOU BEGIN, REMEMBER\n\n\n";
                 this.text = this.text + "BIG BROTHER IS ALWAYS WATCHING";
                 this.text = this.text + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPress ENTER to continue...";
                 this.font = new me.Font("Ariel", 13, "#FFFFFF");
                 this.ypos = 600;
-                this.finished = false;
-                this.scroller = new me.Tween(this).to({ ypos: 20}, 10000).onComplete(this.finish.bind(this)).start();
+                this.scroller = new me.Tween(this).to({ ypos: 20}, 1000).start();
             },
 
             draw: function (renderer) {
                 renderer.clearColor("#000000", true);
                 var measure = this.font.measureText(renderer, this.text);
                 this.font.draw(renderer, this.text, me.game.viewport.width/2 - measure.width/2, this.ypos);
-            },
-
-            finish: function () {
-                console.log("hi");
-                this.finished = true;
-            },
+            }
         }));
 
         me.game.world.addChild(this.exposition);
@@ -89,11 +183,14 @@ game.OpeningScreen = me.ScreenObject.extend({
         this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
             if(action == "enter"){
                 console.log("hi");
+                me.state.change(game.data.ROOM);
             }
         });
     },
 
     onDestroyEvent: function () {
+        me.event.unsubscribe(this.handler);
+        me.input.unbindKey(me.input.KEY.ENTER);
         me.game.world.removeChild(this.transition);
         me.game.world.removeChild(this.exposition);
         this.transition = null;
@@ -134,7 +231,7 @@ game.StartButton = me.GUI_Object.extend({
 
     onClick: function (event) {
         console.log("clicked!");
-        me.state.change(me.state.INTRO);
+        me.state.change(game.data.INTRO);
         return true;
     },
 
