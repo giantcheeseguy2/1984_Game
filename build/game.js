@@ -3,10 +3,17 @@ var game = {
         score: 0,
         money: 0,
         diary: 0,
+        globe: 0,
         book: 0,
         shop: 0,
         INTRO: me.state.USER + 0,
-        ROOM: me.state.USER + 1
+        ROOM: me.state.USER + 1,
+        WORK: me.state.USER + 2,
+        SHOP: me.state.SHOP + 3
+    },
+
+    roomText: {
+        texts: ["Big Brother Is Always Watching...", ""]
     },
 
     resources: [
@@ -16,6 +23,11 @@ var game = {
         { name: "title_text", type: "image", src: "data/title/title_text.png" },
         { name: "start_button", type: "image", src: "data/title/start_button.png" },
         { name: "work_button", type: "image", src: "data/room/work_button.png" },
+        { name: "shop_button", type: "image", src: "data/room/shop_button.png" },
+        { name: "telescreen_4", type: "image", src: "data/room/telescreen_4.png" },
+        { name: "telescreen_3", type: "image", src: "data/room/telescreen_3.png" },
+        { name: "telescreen_2", type: "image", src: "data/room/telescreen_2.png" },
+        { name: "telescreen_1", type: "image", src: "data/room/telescreen_1.png" },
         { name: "empty_shop_button", type: "image", src: "data/room/empty_shop_button.png" },
         { name: "transition", type: "image", src: "data/intro/transition.png" },
         { name: "room", type: "image", src: "data/room/bedroom.png"}
@@ -37,13 +49,31 @@ var game = {
         me.pool.register("animated_people", game.WalkingPeople);
         me.pool.register("start_button", game.StartButton);
         me.pool.register("work_button", game.WorkButton);
+        me.pool.register("shop_button", game.ShopButton);
+        me.pool.register("telescreen", game.Telescreen);
         me.state.change(me.state.MENU);
     }
 };
 
+game.WorkScreen = me.GUI_Object.extend({
+
+    init: function () {
+
+    },
+
+    onResetEvent: function () {
+
+    },
+
+    onDestroyEvent: function () {
+
+    }
+
+});
+
 game.WorkButton = me.GUI_Object.extend({
     init: function (a, b) {
-        this._super(me.GUI_Object, "init", [a, b, {
+        this._super(me.GUI_Object, "init", [a - 75, b - 25, {
             image: me.loader.getImage("work_button"),
             width: 150,
             height: 50
@@ -53,6 +83,34 @@ game.WorkButton = me.GUI_Object.extend({
     },
 
     onClick: function (event) {
+        me.state.change(game.data.WORK);
+        return true;
+    },
+
+    onOver: function (event) {
+        this.setOpacity(0.9);
+        return true;
+    },
+
+    onOut: function (event) {
+        this.setOpacity(1.0);
+        return true;
+    }
+});
+
+game.ShopButton = me.GUI_Object.extend({
+    init: function (a, b) {
+        this._super(me.GUI_Object, "init", [a - 75, b - 25, {
+            image: me.loader.getImage("shop_button"),
+            width: 150,
+            height: 50
+        }]);
+        this.anchorPoint.x = 0;
+        this.anchorPoint.y = 0;
+    },
+
+    onClick: function (event) {
+        me.state.change(game.data.SHOP);
         return true;
     },
 
@@ -74,6 +132,7 @@ game.RoomScreen = me.ScreenObject.extend({
         this.background = null;
         this.work = null;
         this.shop = null;
+        this.telescreen = null;
     },
 
     onResetEvent: function () {
@@ -94,37 +153,52 @@ game.RoomScreen = me.ScreenObject.extend({
                 var text = "$" + String(game.data.money);
                 var measure = this.font.measureText(renderer, text);
                 this.font.draw(renderer, text, me.game.viewport.width - measure.width - 10, 20);
+                text = String(game.data.score);
+                measure = this.font.measureText(renderer, text);
+                this.font.draw(renderer,  text, me.game.viewport.width - measure.width - 10, 40);
             },
             
             update: function(x) {
                 return true;
             }
         }));
-
-        this.work = me.pool.pull("work_button", me.game.viewport.width - 20 - 150, me.game.viewport.height/2 + 135);
-        me.game.world.addChild(this.work);
-
         me.game.world.addChild(this.moneyDisplay);
 
-        if(game.data.shop == 0){
-            this.shop = new me.Sprite(
-                me.video.renderer.getWidth() - 95,
-                me.video.renderer.getHeight()/2 + 230,
-                { image: "empty_shop_button" }
-            );
-            me.game.world.addChild(this.shop);
+        if(game.data.score >= 75){
+            this.telescreen = new me.ImageLayer(0, 0, {image: "telescreen_4"});
+            me.game.world.addChild(this.telescreen);
+        } else if(game.data.score >= 50){
+            this.telescreen = new me.ImageLayer(0, 0, {image: "telescreen_3"});
+            me.game.world.addChild(this.telescreen);
+        } else if(game.data.score >= 25){
+            this.telescreen = new me.ImageLayer(0, 0, {image: "telescreen_2"});
+            me.game.world.addChild(this.telescreen);
+        } else {
+            this.telescreen = new me.ImageLayer(0, 0, {image: "telescreen_1"});
+            me.game.world.addChild(this.telescreen);
         }
 
+        this.work = me.pool.pull("work_button", me.game.viewport.width - 20 - 75, me.game.viewport.height/2 + 100 + 25 + 20 + 20);
+        me.game.world.addChild(this.work);
+
+        this.shop = me.pool.pull("shop_button", me.game.viewport.width - 20 - 75, me.game.viewport.height - 25 - 20 - 20);
+        me.game.world.addChild(this.shop);
+
         me.input.bindKey(me.input.KEY.ENTER, "enter", true);
+        me.input.bindKey(me.input.KEY.SHIFT, "shift", true);
         this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
             if(action == "enter"){
-                console.log("hi");
                 game.data.money++;
+            }
+            if(action == "shift"){
+                game.data.score++;
             }
         });
     },
 
     onDestroyEvent: function() {
+        this.telescreen = null;
+        this.shop = null;
         this.moneyDisplay = null; 
         this.background = null;
         this.work = null;
@@ -182,7 +256,7 @@ game.OpeningScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.ENTER, "enter", true);
         this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
             if(action == "enter"){
-                console.log("hi");
+                console.log("starting game");
                 me.state.change(game.data.ROOM);
             }
         });
