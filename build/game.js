@@ -5,15 +5,21 @@ var game = {
         diary: 0,
         globe: 0,
         book: 0,
-        shop: 0,
+        roomIndex: 0,
+        shopIndex: 0,
+        selected: "none",
         INTRO: me.state.USER + 0,
         ROOM: me.state.USER + 1,
         WORK: me.state.USER + 2,
-        SHOP: me.state.SHOP + 3
+        SHOP: me.state.USER + 3
     },
 
     roomText: {
-        texts: ["Big Brother Is Always Watching...", ""]
+        texts: ["Big Brother Is Always Watching...", "The Shop Is In A Prole Zone,\nAnd Therefore OFF LIMITS", "Freedom Is Slavery", "2 + 2 = 5", "Ignorance Is Strength"]
+    },
+
+    shopText: {
+        texts: ["Please Select An Item"]
     },
 
     resources: [
@@ -28,9 +34,11 @@ var game = {
         { name: "telescreen_3", type: "image", src: "data/room/telescreen_3.png" },
         { name: "telescreen_2", type: "image", src: "data/room/telescreen_2.png" },
         { name: "telescreen_1", type: "image", src: "data/room/telescreen_1.png" },
-        { name: "empty_shop_button", type: "image", src: "data/room/empty_shop_button.png" },
         { name: "transition", type: "image", src: "data/intro/transition.png" },
-        { name: "room", type: "image", src: "data/room/bedroom.png"}
+        { name: "room", type: "image", src: "data/room/bedroom.png"},
+        { name: "shop", type: "image", src: "data/shop/shelf.png"},
+        { name: "back_button", type: "image", src: "data/shop/back_button.png"},
+        { name: "buy_button", type: "image", src: "data/shop/buy_button.png"}
     ],
 
     onload: function () {
@@ -46,27 +54,121 @@ var game = {
         me.state.set(me.state.MENU, new game.TitleScreen());
         me.state.set(game.data.INTRO, new game.OpeningScreen());
         me.state.set(game.data.ROOM, new game.RoomScreen());
+        me.state.set(game.data.SHOP, new game.ShopScreen());
         me.pool.register("animated_people", game.WalkingPeople);
         me.pool.register("start_button", game.StartButton);
         me.pool.register("work_button", game.WorkButton);
         me.pool.register("shop_button", game.ShopButton);
+        me.pool.register("back_button", game.BackButton);
+        me.pool.register("buy_button", game.BuyButton);
         me.pool.register("telescreen", game.Telescreen);
         me.state.change(me.state.MENU);
     }
 };
 
-game.WorkScreen = me.GUI_Object.extend({
+game.BackButton = me.GUI_Object.extend({
+    init: function (a, b) {
+        this._super(me.GUI_Object, "init", [a - 75, b - 25, {
+            image: me.loader.getImage("back_button"),
+            width: 150,
+            height: 50
+        }]);
+        this.anchorPoint.x = 0;
+        this.anchorPoint.y = 0;
+    },
 
+    onClick: function (event) {
+        me.state.change(game.data.ROOM);
+        return true;
+    },
+
+    onOver: function (event) {
+        this.setOpacity(0.9);
+        return true;
+    },
+
+    onOut: function (event) {
+        this.setOpacity(1.0);
+        return true;
+    }
+});
+
+game.BuyButton = me.GUI_Object.extend({
+    init: function (a, b) {
+        this._super(me.GUI_Object, "init", [a - 75, b - 25, {
+            image: me.loader.getImage("buy_button"),
+            width: 150,
+            height: 50
+        }]);
+        this.anchorPoint.x = 0;
+        this.anchorPoint.y = 0;
+    },
+
+    onClick: function (event) {
+        return true;
+    },
+
+    onOver: function (event) {
+        this.setOpacity(0.9);
+        return true;
+    },
+
+    onOut: function (event) {
+        this.setOpacity(1.0);
+        return true;
+    }
+});
+
+game.ShopScreen = me.ScreenObject.extend({
+    
     init: function () {
-
+        this.background = null;
+        this.moneyDisplay = null;
+        this.back = null;
+        this.buy = null;
     },
 
     onResetEvent: function () {
+        console.log("transitioned");
+        this.background = new me.ImageLayer(0, 0, { image: "shop" });
+        me.game.world.addChild(this.background);
 
+        this.moneyDisplay = new (me.Renderable.extend({
+
+            init: function () { 
+                this._super(me.Renderable, "init", [0, 0, me.game.viewport.width, me.game.viewport.height]);
+                this.font = new me.Font("Ariel", 20, "#FFFFFF");
+                this.isDirty = true;
+            },
+
+            draw: function (renderer) {
+                var text = "$" + String(game.data.money);
+                var measure = this.font.measureText(renderer, text);
+                this.font.draw(renderer, text, me.game.viewport.width - measure.width - 10, 20);
+                this.font.draw(renderer, game.shopText.texts[game.data.shopIndex], 20 + 20, me.game.viewport.height/2 + 100 + 20 + 20);
+            },
+            
+            update: function(x) {
+                return true;
+            }
+        }));
+        me.game.world.addChild(this.moneyDisplay);
+
+        this.buy = me.pool.pull("buy_button", me.game.viewport.width - 20 - 75, me.game.viewport.height/2 + 100 + 25 + 20 + 20);
+        me.game.world.addChild(this.buy);
+
+        this.back = me.pool.pull("back_button", me.game.viewport.width - 20 - 75, me.game.viewport.height - 25 - 20 - 20);
+        me.game.world.addChild(this.back);
     },
 
-    onDestroyEvent: function () {
-
+    onDestroyEvent: function() {
+        me.game.world.removeChild(this.back);
+        me.game.world.removeChild(this.buy);
+        me.game.world.removeChild(this.moneyDisplay);
+        me.game.world.removeChild(this.background);
+        this.moneyDisplay = null; 
+        this.background = null;
+        this.back = null;
     }
 
 });
@@ -146,6 +248,7 @@ game.RoomScreen = me.ScreenObject.extend({
                 this._super(me.Renderable, "init", [0, 0, me.game.viewport.width, me.game.viewport.height]);
                 this.font = new me.Font("Ariel", 20, "#FFFFFF");
                 this.isDirty = true;
+                this.cur = 0;
                 console.log("made");
             },
 
@@ -153,12 +256,17 @@ game.RoomScreen = me.ScreenObject.extend({
                 var text = "$" + String(game.data.money);
                 var measure = this.font.measureText(renderer, text);
                 this.font.draw(renderer, text, me.game.viewport.width - measure.width - 10, 20);
-                text = String(game.data.score);
-                measure = this.font.measureText(renderer, text);
-                this.font.draw(renderer,  text, me.game.viewport.width - measure.width - 10, 40);
+                //measure = this.font.measureText(renderer, game.roomTexts.texts[game.data.roomIndex]);
+                this.font.draw(renderer, game.roomText.texts[game.data.roomIndex], 20 + 20, me.game.viewport.height/2 + 100 + 20 + 20);
             },
             
             update: function(x) {
+                this.cur += x;
+                if(this.cur >= 5000){
+                    this.cur = 0;
+                    game.data.roomIndex++;
+                    game.data.roomIndex %= game.roomText.texts.length;
+                }
                 return true;
             }
         }));
@@ -197,6 +305,14 @@ game.RoomScreen = me.ScreenObject.extend({
     },
 
     onDestroyEvent: function() {
+        me.event.unsubscribe(this.handler);
+        me.input.unbindKey(me.input.KEY.ENTER); 
+        me.input.unbindKey(me.input.KEY.SHIFT); 
+        me.game.world.removeChild(this.telescreen);
+        me.game.world.removeChild(this.shop);
+        me.game.world.removeChild(this.background);
+        me.game.world.removeChild(this.moneyDisplay);
+        me.game.world.removeChild(this.work);
         this.telescreen = null;
         this.shop = null;
         this.moneyDisplay = null; 
