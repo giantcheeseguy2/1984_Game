@@ -19,8 +19,11 @@ var game = {
     },
 
     shopText: {
-        texts: ["Please Select An Item", "This Diary Is a Relic Of The Past.\nPerfect For Commiting Thoughtcrime\n\nCost: $50", "Insufficient Funds"],
-        costs: [-1, 50, -1]
+        texts: ["Please Select An Item", 
+        "This Diary Is A Relic Of The Past.\nPerfect For Commiting Thoughtcrime\n\nCost: $50", 
+        "This Paperweight Is A Glimmer Of Beauty\nIn This Dull World.\nIt Belongs To An Age Long Gone\n\nCost: $100",
+        "Insufficient Funds"],
+        costs: [-1, 50, 100, -1]
     },
 
     resources: [
@@ -40,7 +43,8 @@ var game = {
         { name: "shop", type: "image", src: "data/shop/shelf.png"},
         { name: "back_button", type: "image", src: "data/shop/back_button.png"},
         { name: "buy_button", type: "image", src: "data/shop/buy_button.png"},
-        { name: "diary", type:"image", src: "data/shop/diary.png"}
+        { name: "diary", type: "image", src: "data/shop/diary.png"},
+        { name: "globe", type: "image", src: "data/shop/snowglobe.png"}
     ],
 
     onload: function () {
@@ -65,9 +69,45 @@ var game = {
         me.pool.register("buy_button", game.BuyButton);
         me.pool.register("telescreen", game.Telescreen);
         me.pool.register("diary", game.Diary);
+        me.pool.register("globe", game.Globe);
         me.state.change(me.state.MENU);
     }
 };
+
+game.Globe = me.GUI_Object.extend({
+    init: function (a, b) {
+        this._super(me.GUI_Object, "init", [a - 75, b - 75, {
+            image: me.loader.getImage("globe"),
+            width: 150,
+            height: 150
+        }]);
+        this.anchorPoint.x = 0;
+        this.anchorPoint.y = 0;
+    },
+
+    onClick: function (event) {
+        if(game.data.globe == 1) return true;
+        game.data.shopIndex = 2;
+        return true;
+    },
+
+    onOver: function (event) {
+        this.setOpacity(0.9);
+        return true;
+    },
+
+    onOut: function (event) {
+        this.setOpacity(1.0);
+        return true;
+    },
+
+    update: function(x) {
+        if(game.data.globe == 1){
+            this.setOpacity(0);
+        }
+        return true;
+    }    
+});
 
 game.Diary = me.GUI_Object.extend({
     init: function (a, b) {
@@ -155,6 +195,12 @@ game.BuyButton = me.GUI_Object.extend({
             game.data.score += 25;
             game.data.shopIndex = 0;
         }
+        if(game.data.shopIndex == 2){
+            game.data.globe = 1;
+            game.data.money -= game.shopText.costs[game.data.shopIndex];
+            game.data.score += 25;
+            game.data.shopIndex = 0;
+        }
         return true;
     },
 
@@ -211,7 +257,10 @@ game.ShopScreen = me.ScreenObject.extend({
         this.back = me.pool.pull("back_button", me.game.viewport.width - 20 - 75, me.game.viewport.height - 25 - 20 - 20);
         me.game.world.addChild(this.back);
 
-        this.diary = me.pool.pull("diary", 95, me.game.viewport.height/2 -45);
+        this.diary = me.pool.pull("diary", 105, me.game.viewport.height/2 -45);
+        me.game.world.addChild(this.diary);
+
+        this.diary = me.pool.pull("globe", me.game.viewport.width/2 - 10, me.game.viewport.height/2 -45);
         me.game.world.addChild(this.diary);
     },
 
