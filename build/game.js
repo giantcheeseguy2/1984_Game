@@ -28,6 +28,19 @@ var game = {
         costs: [-1, 50, 100, 200, -1]
     },
 
+    workText: {
+        active: 1,
+        index: 0,
+        tasks: [
+            {
+                original: "THE DAILY CHOCOLATE RATIONS WILL BE LOWERED TO TWENTY GRAMS",
+                written: "",
+                bad: ["LOWERED"],
+                target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS"
+            }
+        ]
+    },
+
     resources: [
         { name: "menu_bg", type: "image", src: "data/title/upper_title.png" },
         { name: "walking_people", type: "image", src: "data/title/lower_title.png" },
@@ -43,6 +56,7 @@ var game = {
         { name: "transition", type: "image", src: "data/intro/transition.png" },
         { name: "room", type: "image", src: "data/room/bedroom.png"},
         { name: "shop", type: "image", src: "data/shop/shelf.png"},
+        { name: "work", type: "image", src: "data/work/work.png"},
         { name: "back_button", type: "image", src: "data/shop/back_button.png"},
         { name: "buy_button", type: "image", src: "data/shop/buy_button.png"},
         { name: "diary", type: "image", src: "data/shop/diary.png"},
@@ -65,6 +79,7 @@ var game = {
         me.state.set(game.data.ROOM, new game.RoomScreen());
         me.state.set(game.data.SHOP, new game.ShopScreen());
         me.state.set(game.data.DEAD, new game.GameOver());
+        me.state.set(game.data.WORK, new game.Work());
         me.pool.register("animated_people", game.WalkingPeople);
         me.pool.register("start_button", game.StartButton);
         me.pool.register("work_button", game.WorkButton);
@@ -75,9 +90,157 @@ var game = {
         me.pool.register("diary", game.Diary);
         me.pool.register("globe", game.Globe);
         me.pool.register("book", game.Book);
+        me.pool.register("engine", game.Working);
         me.state.change(me.state.MENU);
     }
 };
+
+game.Working = me.Renderable.extend({
+    
+    init: function () {
+        this._super(me.Renderable, "init", [0, 0, me.game.viewport.width, me.game.viewport.height]);
+        this.font = new me.Font("Ariel", 13, "#FFFFFF");
+        this.isDirty = true;
+    },
+
+    splice: function(renderer, s) {
+        var d = 270;
+        var ret = "";
+        for(var i = 0; i < s.length; i++){
+            var measure = this.font.measureText(renderer, ret + s.charAt(i));
+            if(measure.width >= 250) ret += "\n";
+            ret += s.charAt(i);
+        }
+        return ret;
+    },
+
+    draw: function (renderer) {
+        var x = game.workText.tasks[game.workText.index];
+        this.font.draw(renderer, this.splice(renderer, x.original), 30, 30) ;
+        this.font.draw(renderer, this.splice(renderer, x.written), 320, 30) ;
+    }
+})
+
+game.Work = me.ScreenObject.extend({
+    
+    init: function () {
+        this.background = null;
+        this.moneyDisplay = null;
+    },
+
+    onResetEvent: function () {
+        console.log("transitioned");
+        this.background = new me.ImageLayer(0, 0, { image: "work" });
+        me.game.world.addChild(this.background);
+
+        this.moneyDisplay = new (me.Renderable.extend({
+
+            init: function () { 
+                this._super(me.Renderable, "init", [0, 0, me.game.viewport.width, me.game.viewport.height]);
+                this.font = new me.Font("Ariel", 20, "#FFFFFF");
+                this.isDirty = true;
+            },
+
+            draw: function (renderer) {
+                this.font.draw(renderer, game.shopText.texts[game.data.shopIndex], 20 + 20, me.game.viewport.height/2 + 100 + 20 + 20);
+            },
+            
+            update: function(x) {
+                return true;
+            }
+        }));
+        me.game.world.addChild(this.moneyDisplay);
+
+        this.engine = me.pool.pull("engine");
+        me.game.world.addChild(this.engine);
+
+        this.back = me.pool.pull("back_button", me.game.viewport.width - 20 - 75, me.game.viewport.height - 25 - 20 - 20);
+        me.game.world.addChild(this.back);
+
+        me.input.bindKey(me.input.KEY.A, "A", true);
+        me.input.bindKey(me.input.KEY.B, "B", true);
+        me.input.bindKey(me.input.KEY.C, "C", true);
+        me.input.bindKey(me.input.KEY.D, "D", true);
+        me.input.bindKey(me.input.KEY.E, "E", true);
+        me.input.bindKey(me.input.KEY.F, "F", true);
+        me.input.bindKey(me.input.KEY.G, "G", true);
+        me.input.bindKey(me.input.KEY.H, "H", true);
+        me.input.bindKey(me.input.KEY.I, "I", true);
+        me.input.bindKey(me.input.KEY.J, "J", true);
+        me.input.bindKey(me.input.KEY.K, "K", true);
+        me.input.bindKey(me.input.KEY.L, "L", true);
+        me.input.bindKey(me.input.KEY.M, "M", true);
+        me.input.bindKey(me.input.KEY.N, "N", true);
+        me.input.bindKey(me.input.KEY.O, "O", true);
+        me.input.bindKey(me.input.KEY.P, "P", true);
+        me.input.bindKey(me.input.KEY.Q, "Q", true);
+        me.input.bindKey(me.input.KEY.R, "R", true);
+        me.input.bindKey(me.input.KEY.S, "S", true);
+        me.input.bindKey(me.input.KEY.T, "T", true);
+        me.input.bindKey(me.input.KEY.U, "U", true);
+        me.input.bindKey(me.input.KEY.V, "V", true);
+        me.input.bindKey(me.input.KEY.W, "W", true);
+        me.input.bindKey(me.input.KEY.X, "X", true);
+        me.input.bindKey(me.input.KEY.Y, "Y", true);
+        me.input.bindKey(me.input.KEY.Z, "Z", true);
+        me.input.bindKey(me.input.KEY.DELETE, "DEL", true);
+        me.input.bindKey(me.input.KEY.BACKSPACE, "BACK", true);
+
+        this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
+            if(action == "DEL" || action == "BACK"){
+                if(game.workText.active == 1){
+                    if(game.workText.tasks[game.workText.index].written.length > 0){
+                        game.workText.tasks[game.workText.index].written =  game.workText.tasks[game.workText.index].written.slice(0, -1);
+                    }
+                }
+            }
+            if(action.length == 1 && action.match(/[A-Z]/i)){
+                if(game.workText.active == 1){
+                    game.workText.tasks[game.workText.index].written += action;
+                }
+            }
+        });
+    },
+
+    onDestroyEvent: function() {
+        me.event.unsubscribe(this.handler);
+        me.input.unbindKey(me.input.KEY.A); 
+        me.input.unbindKey(me.input.KEY.B); 
+        me.input.unbindKey(me.input.KEY.C); 
+        me.input.unbindKey(me.input.KEY.D); 
+        me.input.unbindKey(me.input.KEY.E); 
+        me.input.unbindKey(me.input.KEY.F); 
+        me.input.unbindKey(me.input.KEY.G); 
+        me.input.unbindKey(me.input.KEY.H); 
+        me.input.unbindKey(me.input.KEY.I); 
+        me.input.unbindKey(me.input.KEY.J); 
+        me.input.unbindKey(me.input.KEY.K); 
+        me.input.unbindKey(me.input.KEY.L); 
+        me.input.unbindKey(me.input.KEY.M); 
+        me.input.unbindKey(me.input.KEY.N); 
+        me.input.unbindKey(me.input.KEY.O); 
+        me.input.unbindKey(me.input.KEY.P); 
+        me.input.unbindKey(me.input.KEY.Q); 
+        me.input.unbindKey(me.input.KEY.R); 
+        me.input.unbindKey(me.input.KEY.S); 
+        me.input.unbindKey(me.input.KEY.T); 
+        me.input.unbindKey(me.input.KEY.U); 
+        me.input.unbindKey(me.input.KEY.V); 
+        me.input.unbindKey(me.input.KEY.W); 
+        me.input.unbindKey(me.input.KEY.X); 
+        me.input.unbindKey(me.input.KEY.Y); 
+        me.input.unbindKey(me.input.KEY.Z); 
+        me.input.unbindKey(me.input.KEY.DELETE);
+        me.input.unbindKey(me.input.KEY.BACKSPACE);
+        me.game.world.removeChild(this.moneyDisplay);
+        me.game.world.removeChild(this.background);
+        me.game.world.removeChild(this.engine);
+        this.moneyDisplay = null; 
+        this.background = null;
+        this.engine = null;
+    }
+
+});
 
 game.GameOver = me.ScreenObject.extend({
 
