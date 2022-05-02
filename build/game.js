@@ -183,6 +183,8 @@ game.Work = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.X, "X", true);
         me.input.bindKey(me.input.KEY.Y, "Y", true);
         me.input.bindKey(me.input.KEY.Z, "Z", true);
+        me.input.bindKey(me.input.KEY.PERIOD, ".", true);
+        me.input.bindKey(me.input.KEY.SPACE, " ", true);
         me.input.bindKey(me.input.KEY.DELETE, "DEL", true);
         me.input.bindKey(me.input.KEY.BACKSPACE, "BACK", true);
 
@@ -194,7 +196,7 @@ game.Work = me.ScreenObject.extend({
                     }
                 }
             }
-            if(action.length == 1 && action.match(/[A-Z]/i)){
+            if(action.length == 1 && (action.match(/[A-Z]/i) || action == " " || action == ".")){
                 if(game.workText.active == 1){
                     game.workText.tasks[game.workText.index].written += action;
                 }
@@ -232,6 +234,8 @@ game.Work = me.ScreenObject.extend({
         me.input.unbindKey(me.input.KEY.Z); 
         me.input.unbindKey(me.input.KEY.DELETE);
         me.input.unbindKey(me.input.KEY.BACKSPACE);
+        me.input.unbindKey(me.input.KEY.PERIOD);
+        me.input.unbindKey(me.input.KEY.SPACE);
         me.game.world.removeChild(this.moneyDisplay);
         me.game.world.removeChild(this.background);
         me.game.world.removeChild(this.engine);
