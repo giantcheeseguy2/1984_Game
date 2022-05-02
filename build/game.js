@@ -64,7 +64,7 @@ var game = {
                 bad: ["WITHERS"],
                 good: ["INNER", "PARTY", "MEMBER"],
                 target: "COMRADE OGILVY, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.",
-                worth: 200
+                worth: 100
             },
             {
                 original: "TWO PLUS TWO MAKES FOUR.",
