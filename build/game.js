@@ -29,7 +29,7 @@ var game = {
     },
 
     workText: {
-        active: 3000,
+        active: 2000,
         index: 0,
         score: 0,
         currentText: "PLEASE REWRITE THE ABOVE TEXT",
@@ -38,7 +38,7 @@ var game = {
                 original: "THE DAILY CHOCOLATE RATIONS WILL BE LOWERED TO TWENTY GRAMS.",
                 written: "",
                 bad: ["LOWERED"],
-                good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS"],
+                good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS", "INCREASED"],
                 target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS.",
                 worth: 50
             },
@@ -46,7 +46,7 @@ var game = {
                 original: "THIS IS A TEST.",
                 written: "",
                 bad: [""],
-                good: [""],
+                good: ["NOT"],
                 target: "THIS IS NOT A TEST.",
                 worth: 100
             }
@@ -138,7 +138,7 @@ game.Done = me.GUI_Object.extend({
         total -= dp[a.length][b.length];
         for(var i = 0; i < b.length; i++){
             for(var j = 0; j < game.workText.tasks[game.workText.index].bad.length; j++){
-                if(b[i] == game.workText.tasks[game.workText.index].bad[j]) total -= 30;
+                if(b[i] == game.workText.tasks[game.workText.index].bad[j]) total -= game.workText.tasks[game.workText.index].worth/2;
             }
         }
         for(var i = 0; i < game.workText.tasks[game.workText.index].good.length; i++){
@@ -154,7 +154,7 @@ game.Done = me.GUI_Object.extend({
     },
 
     onClick: function (event) {
-        if(game.workText.active < 3000) return true;
+        if(game.workText.active < 2000) return true;
         if(game.workText.tasks[game.workText.index].written.length == 0) return true;
         this.val = this.score();
         game.workText.currentText = String(this.val);
@@ -169,7 +169,7 @@ game.Done = me.GUI_Object.extend({
         game.workText.active = 0;
         game.workText.index++;
         game.workText.index %= game.workText.tasks.length;
-        game.data.money += game.workText.tasks[game.workText.index].worth;
+        game.data.money += this.val;
         return true;
     },
 
@@ -236,7 +236,7 @@ game.Work = me.ScreenObject.extend({
             },
             
             update: function(x) {
-                if(game.workText.active < 3000) game.workText.active += x;
+                if(game.workText.active < 2000) game.workText.active += x;
                 else {
                     game.workText.currentText = "PLEASE REWRITE THE ABOVE TEXT";
                 }
@@ -287,14 +287,14 @@ game.Work = me.ScreenObject.extend({
 
         this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
             if(action == "DEL" || action == "BACK"){
-                if(game.workText.active >= 3000){
+                if(game.workText.active >= 2000){
                     if(game.workText.tasks[game.workText.index].written.length > 0){
                         game.workText.tasks[game.workText.index].written =  game.workText.tasks[game.workText.index].written.slice(0, -1);
                     }
                 }
             }
             if(typeof action == "string" && action.length == 1 && (action.match(/[A-Z]/i) || action == " " || action == ".")){
-                if(game.workText.active >= 3000){
+                if(game.workText.active >= 2000){
                     game.workText.tasks[game.workText.index].written += action;
                 }
             }
@@ -808,18 +808,18 @@ game.OpeningScreen = me.ScreenObject.extend({
                 this.text = "";
                 this.next = "Press ENTER to continue";
                 this.text = this.text + "THE YEAR IS 1984\n\n\n";
-                this.text = this.text + "YOU LIVE IN AIRSTRIP ONE, A PROVINCE OF OCEANIA\n\n\n";
-                this.text = this.text + "CURRENTLY, OCEANIA IS UNDER THE CONTROL OF THE PARTY AND ITS\nMYSTERIOUS LEADER BIG BROTHER\n\n\n";
-                this.text = this.text + "THE PARTY'S IDEOLOGY, INGSOC, BELIEVES THAT\nIGNORANCE IS STRENGTH AND FREEDOM IS SLAVERY\n\n\n";
-                this.text = this.text + "CURRENTLY, YOU ARE AN OUTER PARTY MEMBER WORKING AT THE MINISTRY OF TRUTH\n\n\n";
-                this.text = this.text + "YOUR JOB IS TO REWRITE HISTORY TO BENEFIT THE STATE\n\n\n";
-                this.text = this.text + "YOU WILL BE COMPENSATED BASED ON THE QUALITY OF YOUR CENSORING\n\n\n";
-                this.text = this.text + "BEFORE YOU BEGIN, REMEMBER\n\n\n";
+                this.text = this.text + "YOU LIVE IN AIRSTRIP ONE, A PROVINCE OF OCEANIA\n\n";
+                this.text = this.text + "CURRENTLY, OCEANIA IS UNDER THE CONTROL OF THE PARTY AND ITS\nMYSTERIOUS LEADER BIG BROTHER.\n\n";
+                this.text = this.text + "THE PARTY'S IDEOLOGY, INGSOC, BELIEVES THAT\nIGNORANCE IS STRENGTH AND FREEDOM IS SLAVERY.\n\n";
+                this.text = this.text + "YOU ARE AN OUTER PARTY MEMBER WORKING AT THE MINISTRY OF TRUTH,\nWHERE YOU REWRITE HISTORY TO BENEFIT THE STATE.\n\n\n\n";
+                this.text = this.text + "IN THIS GAME, BASED ON GEORGE ORWELL'S 1984, YOU WILL MODIFY\nTEXTS AND RECEIVE A SALARY BASED ON THE QUALITY OF YOUR MODIFICATIONS.\n\n";
+                this.text = this.text + "THE CLOSER YOUR NEW TEXT IS TO THE ORIGINAL, AND THE MORE IT\n\n BENEFITS THE STATE, THE MORE SALARY YOU WILL RECEIVE.\n\n";
+                this.text = this.text + "YOU MAY USE YOU'RE SALARY TO BUY ITEMS FROM THE SHOP, BUT BEWARE\n\n\n\n";
                 this.text = this.text + "BIG BROTHER IS ALWAYS WATCHING";
                 this.text = this.text + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPress ENTER to continue...";
                 this.font = new me.Font("Ariel", 13, "#FFFFFF");
                 this.ypos = 600;
-                this.scroller = new me.Tween(this).to({ ypos: 20}, 5000).start();
+                this.scroller = new me.Tween(this).to({ ypos: 20}, 8000).start();
             },
 
             draw: function (renderer) {
