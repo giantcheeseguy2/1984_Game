@@ -150,6 +150,7 @@ game.Done = me.GUI_Object.extend({
             }
             if(found == 0) total -= 25;
         }
+        total = Math.max(total, 0);
         return total;
     },
 
