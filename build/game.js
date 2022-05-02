@@ -29,14 +29,26 @@ var game = {
     },
 
     workText: {
-        active: 1,
+        active: 3000,
         index: 0,
+        score: 0,
+        currentText: "PLEASE REWRITE THE ABOVE TEXT",
         tasks: [
             {
-                original: "THE DAILY CHOCOLATE RATIONS WILL BE LOWERED TO TWENTY GRAMS",
+                original: "THE DAILY CHOCOLATE RATIONS WILL BE LOWERED TO TWENTY GRAMS.",
                 written: "",
                 bad: ["LOWERED"],
-                target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS"
+                good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS"],
+                target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS.",
+                worth: 50
+            },
+            {
+                original: "THIS IS A TEST.",
+                written: "",
+                bad: [""],
+                good: [""],
+                target: "THIS IS NOT A TEST.",
+                worth: 100
             }
         ]
     },
@@ -61,6 +73,7 @@ var game = {
         { name: "buy_button", type: "image", src: "data/shop/buy_button.png"},
         { name: "diary", type: "image", src: "data/shop/diary.png"},
         { name: "globe", type: "image", src: "data/shop/snowglobe.png"},
+        { name: "done", type: "image", src: "data/work/done.png"},
         { name: "book", type: "image", src: "data/shop/book.png"}
     ],
 
@@ -91,9 +104,85 @@ var game = {
         me.pool.register("globe", game.Globe);
         me.pool.register("book", game.Book);
         me.pool.register("engine", game.Working);
+        me.pool.register("done", game.Done);
         me.state.change(me.state.MENU);
     }
 };
+
+game.Done = me.GUI_Object.extend({
+    init: function (a, b) {
+        this._super(me.GUI_Object, "init", [a - 75, b - 25, {
+            image: me.loader.getImage("done"),
+            width: 150,
+            height: 50
+        }]);
+        this.anchorPoint.x = 0;
+        this.anchorPoint.y = 0;
+    },
+    
+    score: function() {
+        var a = game.workText.tasks[game.workText.index].target.replace(".", "").split(" ");
+        var b = game.workText.tasks[game.workText.index].written.replace(".", "").split(" ");
+		var dp = Array(a.length + 1).fill().map(() => Array(b.length + 1).fill(1000000));
+		dp[0][0] = 0;
+		for(var i = 1; i <= a.length; i++){
+			for(var j = 1; j <= b.length; j++){
+				 if(a[i - 1] == b[j - 1]){
+					 dp[i][j] = dp[i - 1][j - 1];
+				 } else {
+					 dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1;
+				 }
+			}
+		}
+        var total = game.workText.tasks[game.workText.index].worth;
+        total -= dp[a.length][b.length];
+        for(var i = 0; i < b.length; i++){
+            for(var j = 0; j < game.workText.tasks[game.workText.index].bad.length; j++){
+                if(b[i] == game.workText.tasks[game.workText.index].bad[j]) total -= 30;
+            }
+        }
+        for(var i = 0; i < game.workText.tasks[game.workText.index].good.length; i++){
+            var found = 0;
+            for(var j = 0; j < b.length; j++){
+                if(game.workText.tasks[game.workText.index].good[i] == b[j]){
+                    found = 1;
+                }
+            }
+            if(found == 0) total -= 25;
+        }
+        return total;
+    },
+
+    onClick: function (event) {
+        if(game.workText.active < 3000) return true;
+        if(game.workText.tasks[game.workText.index].written.length == 0) return true;
+        this.val = this.score();
+        game.workText.currentText = String(this.val);
+        game.workText.tasks[game.workText.index].written = "";
+        if(this.val <= 0){
+            game.workText.currentText = "YOU EARN $" + String(this.val) + ".\n\nABSOLUTELY TERRIBLE JOB";
+        } else if(this.val <= game.workText.tasks[game.workText.index].worth/2){
+            game.workText.currentText = "YOU EARN $" + String(this.val) + ".\n\nBARELY ACCEPTABLE";
+        } else {
+            game.workText.currentText = "YOU EARN $" + String(this.val) + ".\n\nGOOD JOB";
+        }
+        game.workText.active = 0;
+        game.workText.index++;
+        game.workText.index %= game.workText.tasks.length;
+        game.data.money += game.workText.tasks[game.workText.index].worth;
+        return true;
+    },
+
+    onOver: function (event) {
+        this.setOpacity(0.9);
+        return true;
+    },
+
+    onOut: function (event) {
+        this.setOpacity(1.0);
+        return true;
+    }
+});
 
 game.Working = me.Renderable.extend({
     
@@ -103,7 +192,7 @@ game.Working = me.Renderable.extend({
         this.isDirty = true;
     },
 
-    splice: function(renderer, s) {
+    resize: function(renderer, s) {
         var d = 270;
         var ret = "";
         for(var i = 0; i < s.length; i++){
@@ -116,16 +205,17 @@ game.Working = me.Renderable.extend({
 
     draw: function (renderer) {
         var x = game.workText.tasks[game.workText.index];
-        this.font.draw(renderer, this.splice(renderer, x.original), 30, 30) ;
-        this.font.draw(renderer, this.splice(renderer, x.written), 320, 30) ;
-    }
-})
+        this.font.draw(renderer, this.resize(renderer, x.original), 30, 30) ;
+        this.font.draw(renderer, this.resize(renderer, x.written), 320, 30) ;
+    },
+});
 
 game.Work = me.ScreenObject.extend({
     
     init: function () {
         this.background = null;
         this.moneyDisplay = null;
+        this.done = null;
     },
 
     onResetEvent: function () {
@@ -142,10 +232,14 @@ game.Work = me.ScreenObject.extend({
             },
 
             draw: function (renderer) {
-                this.font.draw(renderer, game.shopText.texts[game.data.shopIndex], 20 + 20, me.game.viewport.height/2 + 100 + 20 + 20);
+                this.font.draw(renderer, game.workText.currentText, 20 + 20, me.game.viewport.height/2 + 100 + 20 + 20);
             },
             
             update: function(x) {
+                if(game.workText.active < 3000) game.workText.active += x;
+                else {
+                    game.workText.currentText = "PLEASE REWRITE THE ABOVE TEXT";
+                }
                 return true;
             }
         }));
@@ -153,6 +247,9 @@ game.Work = me.ScreenObject.extend({
 
         this.engine = me.pool.pull("engine");
         me.game.world.addChild(this.engine);
+
+        this.done = me.pool.pull("done", me.game.viewport.width - 20 - 75, me.game.viewport.height/2 + 100 + 25 + 20 + 20);
+        me.game.world.addChild(this.done);
 
         this.back = me.pool.pull("back_button", me.game.viewport.width - 20 - 75, me.game.viewport.height - 25 - 20 - 20);
         me.game.world.addChild(this.back);
@@ -190,14 +287,14 @@ game.Work = me.ScreenObject.extend({
 
         this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
             if(action == "DEL" || action == "BACK"){
-                if(game.workText.active == 1){
+                if(game.workText.active >= 3000){
                     if(game.workText.tasks[game.workText.index].written.length > 0){
                         game.workText.tasks[game.workText.index].written =  game.workText.tasks[game.workText.index].written.slice(0, -1);
                     }
                 }
             }
-            if(action.length == 1 && (action.match(/[A-Z]/i) || action == " " || action == ".")){
-                if(game.workText.active == 1){
+            if(typeof action == "string" && action.length == 1 && (action.match(/[A-Z]/i) || action == " " || action == ".")){
+                if(game.workText.active >= 3000){
                     game.workText.tasks[game.workText.index].written += action;
                 }
             }
