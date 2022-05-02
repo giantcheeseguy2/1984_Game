@@ -767,18 +767,9 @@ game.RoomScreen = me.ScreenObject.extend({
 
         this.shop = me.pool.pull("shop_button", me.game.viewport.width - 20 - 75, me.game.viewport.height - 25 - 20 - 20);
         me.game.world.addChild(this.shop);
-
-        me.input.bindKey(me.input.KEY.ENTER, "enter", true);
-        this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
-            if(action == "enter"){
-                game.data.money++;
-            }
-        });
     },
 
     onDestroyEvent: function() {
-        me.event.unsubscribe(this.handler);
-        me.input.unbindKey(me.input.KEY.ENTER); 
         me.game.world.removeChild(this.telescreen);
         me.game.world.removeChild(this.shop);
         me.game.world.removeChild(this.background);
