@@ -40,7 +40,7 @@ var game = {
                 bad: ["LOWERED"],
                 good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS", "INCREASED"],
                 target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS.",
-                worth: 60
+                worth: 50
             },
             {
                 original: "FREEDOM IS GOOD.",
@@ -48,15 +48,15 @@ var game = {
                 bad: ["GOOD"],
                 good: ["FREEDOM", "SLAVERY"],
                 target: "FREEDOM IS SLAVERY.",
-                worth: 60
+                worth: 50
             },
             {
                 original: "IGNORANCE IS BAD.",
                 written: "",
                 bad: ["BAD"],
-                good: ["FREEDOM", "STRENGTH"],
+                good: ["IGNORANCE", "STRENGTH"],
                 target: "IGNORANCE IS STRENGTH.",
-                worth: 60
+                worth: 50
             },
             {
                 original: "COMRADE WITHERS, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.\n\n\n(HINT: COMRADE WITHERS IS A TRAITOR)",
@@ -64,31 +64,31 @@ var game = {
                 bad: ["WITHERS"],
                 good: ["INNER", "PARTY", "MEMBER"],
                 target: "COMRADE OGILVY, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.",
-                worth: 100
+                worth: 75
             },
             {
                 original: "TWO PLUS TWO MAKES FOUR.",
                 written: "",
                 bad: ["FOUR"],
-                good: [],
+                good: ["FIVE", "TWO", "PLUS"],
                 target: "TWO PLUS TWO MAKES FIVE.",
-                worth: 60
+                worth: 50
             },
             {
                 original: "I HATE BIG BROTHER.",
                 written: "",
                 bad: ["HATE"],
-                good: ["LOVE"],
+                good: ["LOVE", "BIG", "BROTHER"],
                 target: "I LOVE BIG BROTHER.",
-                worth: 60
+                worth: 50
             },
             {
                 original: "WAR IS BAD.",
                 written: "",
                 bad: ["BAD"],
-                good: ["PEACE"],
+                good: ["PEACE", "WAR"],
                 target: "WAR IS PEACE.",
-                worth: 60
+                worth: 50
             }
         ]
     },
