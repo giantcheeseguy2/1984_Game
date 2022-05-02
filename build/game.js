@@ -35,11 +35,11 @@ var game = {
         currentText: "PLEASE REWRITE THE ABOVE TEXT",
         tasks: [
             {
-                original: "THE DAILY CHOCOLATE RATIONS WILL BE LOWERED TO TWENTY GRAMS.",
+                original: "I HATE BIG BROTHER.",
                 written: "",
-                bad: ["LOWERED"],
-                good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS", "INCREASED"],
-                target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS.",
+                bad: ["HATE"],
+                good: ["LOVE", "BIG", "BROTHER"],
+                target: "I LOVE BIG BROTHER.",
                 worth: 50
             },
             {
@@ -51,21 +51,21 @@ var game = {
                 worth: 50
             },
             {
+                original: "THE DAILY CHOCOLATE RATIONS WILL BE LOWERED TO TWENTY GRAMS.",
+                written: "",
+                bad: ["LOWERED"],
+                good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS", "INCREASED"],
+                target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS.",
+                worth: 75
+            },
+            {
                 original: "IGNORANCE IS BAD.",
                 written: "",
                 bad: ["BAD"],
                 good: ["IGNORANCE", "STRENGTH"],
                 target: "IGNORANCE IS STRENGTH.",
                 worth: 50
-            },
-            {
-                original: "COMRADE WITHERS, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.\n\n\n(HINT: COMRADE WITHERS IS A TRAITOR)",
-                written: "",
-                bad: ["WITHERS"],
-                good: ["INNER", "PARTY", "MEMBER"],
-                target: "COMRADE OGILVY, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.",
-                worth: 75
-            },
+            }, 
             {
                 original: "TWO PLUS TWO MAKES FOUR.",
                 written: "",
@@ -75,12 +75,12 @@ var game = {
                 worth: 50
             },
             {
-                original: "I HATE BIG BROTHER.",
+                original: "COMRADE WITHERS, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.\n\n\n(HINT: COMRADE WITHERS IS A TRAITOR)",
                 written: "",
-                bad: ["HATE"],
-                good: ["LOVE", "BIG", "BROTHER"],
-                target: "I LOVE BIG BROTHER.",
-                worth: 50
+                bad: ["WITHERS"],
+                good: ["INNER", "PARTY", "MEMBER"],
+                target: "COMRADE OGILVY, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.",
+                worth: 75
             },
             {
                 original: "WAR IS BAD.",
