@@ -40,15 +40,55 @@ var game = {
                 bad: ["LOWERED"],
                 good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS", "INCREASED"],
                 target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS.",
-                worth: 50
+                worth: 60
             },
             {
-                original: "THIS IS A TEST.",
+                original: "FREEDOM IS GOOD.",
                 written: "",
-                bad: [""],
-                good: ["NOT"],
-                target: "THIS IS NOT A TEST.",
-                worth: 100
+                bad: ["GOOD"],
+                good: ["FREEDOM", "SLAVERY"],
+                target: "FREEDOM IS SLAVERY.",
+                worth: 60
+            },
+            {
+                original: "IGNORANCE IS BAD.",
+                written: "",
+                bad: ["BAD"],
+                good: ["FREEDOM", "STRENGTH"],
+                target: "IGNORANCE IS STRENGTH.",
+                worth: 60
+            },
+            {
+                original: "COMRADE WITHERS, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.\n\n\n(HINT: COMRADE WITHERS IS A TRAITOR)",
+                written: "",
+                bad: ["WITHERS"],
+                good: ["INNER", "PARTY", "MEMBER"],
+                target: "COMRADE OGILVY, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.",
+                worth: 200
+            },
+            {
+                original: "TWO PLUS TWO MAKES FOUR.",
+                written: "",
+                bad: ["FOUR"],
+                good: [],
+                target: "TWO PLUS TWO MAKES FIVE.",
+                worth: 60
+            },
+            {
+                original: "I HATE BIG BROTHER.",
+                written: "",
+                bad: ["HATE"],
+                good: ["LOVE"],
+                target: "I LOVE BIG BROTHER.",
+                worth: 60
+            },
+            {
+                original: "WAR IS BAD.",
+                written: "",
+                bad: ["BAD"],
+                good: ["PEACE"],
+                target: "WAR IS PEACE.",
+                worth: 60
             }
         ]
     },
@@ -282,6 +322,7 @@ game.Work = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.Y, "Y", true);
         me.input.bindKey(me.input.KEY.Z, "Z", true);
         me.input.bindKey(me.input.KEY.PERIOD, ".", true);
+        me.input.bindKey(me.input.KEY.COMMA, ",", true);
         me.input.bindKey(me.input.KEY.SPACE, " ", true);
         me.input.bindKey(me.input.KEY.DELETE, "DEL", true);
         me.input.bindKey(me.input.KEY.BACKSPACE, "BACK", true);
@@ -294,7 +335,7 @@ game.Work = me.ScreenObject.extend({
                     }
                 }
             }
-            if(typeof action == "string" && action.length == 1 && (action.match(/[A-Z]/i) || action == " " || action == ".")){
+            if(typeof action == "string" && action.length == 1 && (action.match(/[A-Z]/i) || action == " " || action == "." || action == ",")){
                 if(game.workText.active >= 2000){
                     game.workText.tasks[game.workText.index].written += action;
                 }
@@ -334,6 +375,7 @@ game.Work = me.ScreenObject.extend({
         me.input.unbindKey(me.input.KEY.BACKSPACE);
         me.input.unbindKey(me.input.KEY.PERIOD);
         me.input.unbindKey(me.input.KEY.SPACE);
+        me.input.unbindKey(me.input.KEY.COMMA);
         me.game.world.removeChild(this.moneyDisplay);
         me.game.world.removeChild(this.background);
         me.game.world.removeChild(this.engine);
