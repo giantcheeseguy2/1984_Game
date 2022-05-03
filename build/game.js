@@ -146,6 +146,7 @@ var game = {
         me.pool.register("engine", game.Working);
         me.pool.register("done", game.Done);
         me.state.change(me.state.MENU);
+        //me.state.change(game.data.DEAD);
     }
 };
 
@@ -408,12 +409,16 @@ game.GameOver = me.ScreenObject.extend({
             init: function () {
                 this._super(me.Renderable, "init", [0, 0, me.game.viewport.width, me.game.viewport.height]);
                 this.text = "";
-                this.text = this.text + "IN THE END, YOU WERE DISCOVERED BY THE THOUGHT POLICE\nAND SENT TO THE MINISTRY OF LOVE\n\n\n";
-                this.text = this.text + "AFTER BEING TORTURED, YOU FINALLY GROW TO LOVE BIG BROTHER\n\n\n";
-                this.text = this.text + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGAME OVER, THANKS FOR PLAYING";
+                this.text = this.text + "IN THE END, YOU WERE DISCOVERED BY THE THOUGHT POLICE\nAND SENT TO THE MINISTRY OF LOVE\n\n\n\n";
+                this.text = this.text + "AFTER BEING TORTURED, YOU FINALLY GROW TO LOVE BIG BROTHER\n\n\n\n";
+                this.text = this.text + "GAME OVER, THANKS FOR PLAYING\n\n\n\n\n\n\n\n\n\n\n\n"
+                this.text = this.text + "FINAL NOTES:\n\nORIGINALLY, THE GAME WAS SUPPOSED TO ADHERE CLOSER TO THE\n" +
+                                        "BOOK'S PLOT, BUT THAT WAS TOO HARD, SO I TRIED TO REFERENCE\n" + 
+                                        "THE BOOK AS MUCH AS POSSIBLE. ACTUALLY, ALL OF THE TEXTS YOU\n" +
+                                        "REWROTE AND SHOP ITEMS WERE TAKEN FROM THE BOOK.\n\n\n\nANYWAYS, I HOPE YOU ENJOYED THE GAME!";
                 this.font = new me.Font("Ariel", 13, "#FFFFFF");
                 this.ypos = 600;
-                this.scroller = new me.Tween(this).to({ ypos: 20}, 5000).start();
+                this.scroller = new me.Tween(this).to({ ypos: 20}, 15000).start();
             },
 
             draw: function (renderer) {
@@ -862,7 +867,7 @@ game.OpeningScreen = me.ScreenObject.extend({
                 this.text = this.text + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPress ENTER to continue...";
                 this.font = new me.Font("Ariel", 13, "#FFFFFF");
                 this.ypos = 600;
-                this.scroller = new me.Tween(this).to({ ypos: 20}, 8000).start();
+                this.scroller = new me.Tween(this).to({ ypos: 20}, 20000).start();
             },
 
             draw: function (renderer) {
