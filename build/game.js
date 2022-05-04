@@ -40,7 +40,7 @@ var game = {
                 bad: ["HATE"],
                 good: ["LOVE", "BIG", "BROTHER"],
                 target: "I LOVE BIG BROTHER.",
-                worth: 50
+                worth: 75
             },
             {
                 original: "FREEDOM IS GOOD.",
@@ -48,7 +48,7 @@ var game = {
                 bad: ["GOOD"],
                 good: ["FREEDOM", "SLAVERY"],
                 target: "FREEDOM IS SLAVERY.",
-                worth: 50
+                worth: 75
             },
             {
                 original: "THE DAILY CHOCOLATE RATIONS WILL BE LOWERED TO TWENTY GRAMS.",
@@ -56,7 +56,7 @@ var game = {
                 bad: ["LOWERED"],
                 good: ["CHOCOLATE", "DAILY", "RATIONS", "TWENTY", "GRAMS", "INCREASED"],
                 target: "THE DAILY CHOCOLATE RATIONS WILL BE INCREASED TO TWENTY GRAMS.",
-                worth: 75
+                worth: 100
             },
             {
                 original: "IGNORANCE IS BAD.",
@@ -72,7 +72,7 @@ var game = {
                 bad: ["FOUR"],
                 good: ["FIVE", "TWO", "PLUS"],
                 target: "TWO PLUS TWO MAKES FIVE.",
-                worth: 50
+                worth: 75
             },
             {
                 original: "COMRADE WITHERS, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.\n\n\n(HINT: COMRADE WITHERS IS A TRAITOR)",
@@ -80,7 +80,7 @@ var game = {
                 bad: ["WITHERS"],
                 good: ["INNER", "PARTY", "MEMBER"],
                 target: "COMRADE OGILVY, A GLORIOUS MEMBER OF THE INNER PARTY, WILL BE GRANTED THE ORDER OF CONSPICUOUS MERIT, SECOND CLASS.",
-                worth: 75
+                worth: 100
             },
             {
                 original: "WAR IS BAD.",
@@ -88,7 +88,7 @@ var game = {
                 bad: ["BAD"],
                 good: ["PEACE", "WAR"],
                 target: "WAR IS PEACE.",
-                worth: 50
+                worth: 75
             }
         ]
     },
